@@ -1,0 +1,116 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { getCollection } from 'astro:content';
+import { SKILLS } from '../constants';
+import { Icon } from 'astro-icon/components';
+
+const projects = await getCollection('projects');
+const featuredProjects = projects.slice(0, 2); // Taking first two as featured
+const posts = await getCollection('blog');
+const latestWriting = posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()).slice(0, 3);
+const links = [
+  { name: 'GitHub', url: 'https://github.com/A-selam' },
+  { name: 'Twitter', url: 'https://twitter.com/AbduselamS' },
+  { name: 'LinkedIn', url: 'https://linkedin.com/in/abduselam-s-05126b330/' },
+];
+---
+
+<MainLayout currentView="home">
+  <div class="w-full max-w-[800px] flex flex-col gap-32 py-24 px-6 md:px-0">
+    {/* Hero */}
+    <section class="flex flex-col gap-6">
+      <h1 class="font-silkscreen text-3xl md:text-5xl tracking-tight leading-[1.1] text-primary uppercase">
+        Hello, My name is Abduselam
+      </h1>
+      <p class="text-lg md:text-xl font-normal leading-relaxed opacity-80 max-w-2xl text-primary">
+        I build simple, well-structured web systems and write about what I learn along the way.
+      </p>
+      <div class="flex items-center gap-8 mt-6">
+          {links.map((link) => (
+              <a href={link.url} class="text-sm font-medium text-primary underline underline-offset-4 decoration-primary/30 hover:decoration-primary transition-all">
+                  {link.name}
+              </a>
+          ))}
+      </div>
+    </section>
+
+    {/* Featured Projects */}
+    <section class="flex flex-col">
+      <div class="flex flex-col gap-4 mb-8">
+        <div class="flex items-center justify-between">
+          <h2 class="font-silkscreen text-xl font-bold tracking-wider uppercase text-primary">Featured Projects</h2>
+          <a 
+              href="/projects"
+              class="text-sm text-primary opacity-60 hover:opacity-100 flex items-end gap-1 transition-opacity no-underline"
+          >
+            View Archive <span class="material-symbols-outlined">
+              <Icon name="mdi:arrow-forward" />
+            </span>
+          </a>
+        </div>
+        <div class="w-full border-t border-accent-line opacity-100"></div>
+      </div>
+      <div class="flex flex-col gap-8">
+        {featuredProjects.map((project) => (
+          <a href={`/projects`} class="group border border-primary/10 rounded-xl p-6 hover:bg-primary/5 transition-colors cursor-pointer no-underline block">
+            <div class="flex flex-col gap-4">
+              <div class="flex justify-between items-start">
+                <h3 class="text-xl font-bold text-primary">{project.data.title}</h3>
+                <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Icon name="mdi:open-in-new" />
+                </span>
+              </div>
+              <p class="text-primary/70 leading-relaxed">
+                {project.data.description}
+              </p>
+              <div class="flex flex-wrap gap-2">
+                {project.data.tags.map((tag) => (
+                  <span class="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">{tag}</span>
+                ))}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {/* Latest Writing */}
+    <section class="flex flex-col">
+      <div class="flex flex-col gap-4 mb-8">
+          <h2 class="font-silkscreen text-xl font-bold tracking-wider uppercase text-primary">Latest Writing</h2>
+          <div class="w-full border-t border-accent-line opacity-100"></div>
+      </div>
+      <div class="flex flex-col">
+        {latestWriting.map((post) => (
+          <a 
+              href={`/blog/${post.slug}`}
+              class="group flex items-center justify-between py-6 border-b border-primary/5 hover:px-2 transition-all cursor-pointer no-underline"
+          >
+            <span class="text-lg font-medium text-primary group-hover:text-primary/80">{post.data.title}</span>
+            <span class="text-sm text-primary opacity-50 font-medium">{post.data.date}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {/* Technical Skills */}
+    <section class="flex flex-col">
+      <div class="flex flex-col gap-4 mb-8">
+          <h2 class="font-silkscreen text-xl font-bold tracking-wider uppercase text-primary">Technical Skills</h2>
+          <div class="w-full border-t border-accent-line opacity-100"></div>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        {SKILLS.map((skill) => (
+          <div class="flex items-center gap-2 px-4 py-2 bg-transparent rounded-full text-primary text-sm border border-skill-border hover:bg-white/5 transition-all cursor-default">
+            {skill.isTextIcon ? (
+              <span class="material-symbols-outlined text-sm text-[#fffaf4]">{skill.icon}</span>
+            ) : (
+              <img src={skill.icon} alt={skill.name} class="w-4 h-4" />
+            )}
+            <span>{skill.name}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</MainLayout>

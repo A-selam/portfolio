@@ -1,0 +1,16 @@
+---
+id: type-safe-events
+title: Designing Type-Safe Event Architectures with TypeScript
+description: When building large-scale distributed systems, the communication between services often becomes the bottleneck...
+date: Nov 12, 2024
+category: Engineering
+readTime: 12 min read
+---
+
+When building large-scale distributed systems, the communication between services often becomes the bottleneck for both performance and developer velocity. While REST APIs offer a familiar pattern, they frequently lead to tight coupling and the "distributed monolith" anti-pattern.
+
+The shift toward event-driven architecture (EDA) promises decoupled components, but it often comes at the cost of visibility and type safety. How do we ensure that a producer's payload matches the consumer's expectations without manual schema registries?
+
+## Defining the Schema
+
+We can leverage TypeScript's advanced type system to create a central truth for our events. By using discriminated unions, we can ensure that every event handler is exhaustive and type-safe.
