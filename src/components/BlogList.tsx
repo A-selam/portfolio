@@ -1,41 +1,45 @@
-import { useState } from 'preact/hooks';
+import { useState } from "preact/hooks";
+import "iconify-icon";
 
 interface Props {
   posts: any[];
   allPosts: any[];
+  filter: string[];
 }
 
-export default function BlogList({ posts, allPosts }: Props) {
-  const [activeFilter, setActiveFilter] = useState('All Posts');
-  const filters = ['All Posts', 'Development', 'Design', 'Infrastructure', 'Career', 'Engineering'];
+export default function BlogList({ posts, allPosts, filter }: Props) {
+  const [activeFilter, setActiveFilter] = useState("All Posts");
+  const filters = ["All Posts", ...filter];
 
-  const filteredPosts = activeFilter === 'All Posts'
-    ? allPosts
-    : allPosts.filter(post => post.data.category === activeFilter);
+  const filteredPosts =
+    activeFilter === "All Posts"
+      ? allPosts
+      : allPosts.filter((post) => post.data.category === activeFilter);
 
   return (
     <div className="w-full">
-      <section className="mb-12">
+      <section className="mb-5">
         <div className="flex flex-wrap gap-3">
-          {filters.map(filter => (
+          {filters.map((filter) => (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
               className={`px-4 py-1.5 rounded-full border text-sm transition-colors cursor-pointer ${
                 activeFilter === filter
-                  ? 'bg-primary text-background-dark border-primary'
-                  : 'border-primary/20 text-primary hover:border-primary/50'
+                  ? "bg-primary text-background-dark border-primary"
+                  : "border-primary/20 text-primary hover:border-primary/50"
               }`}
             >
               {filter}
             </button>
           ))}
         </div>
+        <div class="w-full border-t border-accent-line opacity-100 mt-5"></div>
       </section>
 
       <section className="flex flex-col">
         <div className="flex flex-col">
-          {filteredPosts.map(post => (
+          {filteredPosts.map((post) => (
             <a
               key={post.slug}
               href={`/blog/${post.slug}`}
@@ -52,8 +56,8 @@ export default function BlogList({ posts, allPosts }: Props) {
                   {post.data.description}
                 </p>
               </div>
-              <span className="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity hidden md:block">
-                arrow_forward
+              <span className="material-symbols-outlined text-primary opacity-0 group-hover:opacity-50 transition-opacity hidden md:block">
+                <iconify-icon icon="mdi:arrow-forward" width="24" height="24" />
               </span>
             </a>
           ))}

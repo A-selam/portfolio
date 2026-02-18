@@ -1,0 +1,31 @@
+---
+const { H1, p, link } = Astro.props;
+import { CONTACTS } from "../constants";
+---
+
+<section class="flex flex-col gap-6">
+  <h1
+    class="font-silkscreen text-3xl md:text-5xl tracking-tight leading-[1.1] text-primary uppercase"
+  >
+    {H1}
+  </h1>
+  <p
+    class="text-lg md:text-xl font-normal leading-relaxed opacity-80 max-w-2xl text-primary"
+  >
+    {p}
+  </p>
+  {
+    link && (
+      <div class="flex items-center gap-8 mt-6">
+        {CONTACTS.map((link) => (
+          <a
+            href={link.url}
+            class="text-sm font-medium text-primary underline underline-offset-4 decoration-primary/30 hover:decoration-primary transition-all"
+          >
+            {link.name}
+          </a>
+        ))}
+      </div>
+    )
+  }
+</section>

@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon/components";
+
+const { h2, a } = Astro.props;
+---
+
+<div class="flex flex-col gap-2 mb-8">
+  <div class="flex items-center justify-between">
+    <h2
+      class="font-silkscreen text-xl font-bold tracking-wider uppercase text-primary"
+    >
+      {h2}
+    </h2>
+    {
+      a && (
+        <a
+          href={a}
+          class="text-sm text-primary opacity-60 hover:opacity-100 flex items-end gap-1 transition-opacity no-underline"
+        >
+          View Archive{" "}
+          <span class="material-symbols-outlined">
+            <Icon name="mdi:arrow-forward" />
+          </span>
+        </a>
+      )
+    }
+  </div>
+  <div class="w-full border-t border-accent-line opacity-100"></div>
+</div>

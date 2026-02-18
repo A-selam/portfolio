@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+import SectionHeader from "./SectionHeader.astro";
+import { TimelineItem, Education, Experience } from "../types";
+
+const { sectionHeader, iterable } = Astro.props as {
+  sectionHeader: string;
+  iterable: TimelineItem[];
+};
+---
+
+<section class="mb-16">
+  <SectionHeader h2={sectionHeader} />
+  {
+    iterable.map((element: TimelineItem) => (
+      <div class="flex items-center gap-6 px-0 min-h-[80px] pb-8">
+        <div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 shrink-0 size-14 overflow-hidden">
+          <Image
+            src={element.logo}
+            alt={`${element.organization} logo`}
+            width={100}
+            height={100}
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="flex flex-col justify-center">
+          <p class="text-primary text-lg font-medium leading-normal">
+            {((element as Experience).role || (element as Education).degree) ??
+              ""}
+          </p>
+          <p class="text-primary/60 text-sm font-normal leading-normal">
+            {element.organization} |{" "}
+            {(element as Education | Experience).period}
+          </p>
+        </div>
+      </div>
+    ))
+  }
+</section>

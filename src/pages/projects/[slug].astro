@@ -1,0 +1,77 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { CollectionEntry, getCollection, render } from "astro:content";
+import { Icon } from "astro-icon/components";
+import { z } from "zod";
+
+export async function getStaticPaths() {
+  const projectEntries = await getCollection("projects");
+  return projectEntries.map((entry: CollectionEntry<"projects">) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<MainLayout title={entry.data.title} currentView="project-post">
+  <article class="max-w-3xl mx-auto px-6 py-20 w-full">
+    <header class="mb-12">
+      <h1
+        class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6 font-silkscreen text-[#fffaf4]"
+      >
+        {entry.data.title}
+      </h1>
+      <div class="flex flex-col gap-4 mb-8">
+        <p class="text-muted-blue text-base font-medium leading-relaxed">
+          {entry.data.description}
+        </p>
+        <div class="flex flex-wrap gap-2">
+          {
+            entry.data.tags.map((tag: any) => (
+              <span class="px-3 py-1 bg-[#334155] rounded-full text-xs font-semibold text-primary">
+                {tag}
+              </span>
+            ))
+          }
+        </div>
+      </div>
+      {
+        entry.data.image && (
+          <div class="w-full h-[400px] rounded-2xl border border-[#334155] flex items-center justify-center mb-12 relative overflow-hidden bg-[#0f172a]">
+            <img
+              src={entry.data.image}
+              alt={`${entry.data.title} preview`}
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        )
+      }
+    </header>
+
+    <div
+      class="prose prose-invert max-w-none prose-p:text-[#cbd5e1] prose-headings:text-[#fffaf4] prose-strong:text-[#fffaf4] prose-code:text-[#fffaf4]"
+    >
+      <Content />
+    </div>
+
+    <footer
+      class="mt-12 pt-8 border-t border-[#334155] flex items-center justify-end gap-6"
+    >
+      <div class="flex gap-6">
+        <a
+          href="/projects"
+          class="text-sm font-medium text-primary hover:opacity-70 transition-opacity no-underline flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-sm">
+            <Icon name="mdi:arrow-back" />
+          </span>
+          Back to Projects
+        </a>
+      </div>
+    </footer>
+  </article>
+</MainLayout>

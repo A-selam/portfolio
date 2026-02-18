@@ -22,6 +22,15 @@
         "image": {
           "type": "string"
         },
+        "liveUrl": {
+          "type": "string"
+        },
+        "codeUrl": {
+          "type": "string"
+        },
+        "readMoreUrl": {
+          "type": "string"
+        },
         "$schema": {
           "type": "string"
         }
@@ -30,7 +39,10 @@
         "id",
         "title",
         "description",
-        "tags"
+        "tags",
+        "liveUrl",
+        "codeUrl",
+        "readMoreUrl"
       ],
       "additionalProperties": false
     }

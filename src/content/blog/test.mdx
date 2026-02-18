@@ -1,0 +1,43 @@
+---
+id: test
+title: "Designing Quiet Software"
+description: "On building systems that do their work without demanding attention."
+date: Aug 30, 2023
+category: test
+---
+
+![Abstract dark minimal architecture](/AASTU.png)
+
+Software doesn’t need to announce itself.
+
+The best systems I’ve worked on are the ones users barely notice —
+they load quickly, respond instantly, and never make you think about
+what’s happening underneath.
+
+This is what I think of as **quiet architecture**.
+
+## Structure Before Features
+
+Before adding animations, state management layers, or abstractions,
+I try to answer one question:
+
+> What is the simplest structure that will still scale?
+
+For example, when building a blog with Astro, you don’t need a database
+if your content is mostly static.
+
+```ts
+// src/content/config.ts
+import { defineCollection, z } from "astro:content";
+
+const blog = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.date(),
+    tags: z.array(z.string()),
+  }),
+});
+
+export const collections = { blog };
+```

@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import SectionHeader from "./SectionHeader.astro";
+
+const posts = await getCollection("blog");
+const latestWriting = posts
+  .sort(
+    (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+  )
+  .slice(0, 3);
+---
+
+<section class="flex flex-col">
+  <SectionHeader h2="Latest Writing" a="" />
+  <div class="flex flex-col">
+    {
+      latestWriting.map((post) => (
+        <a
+          href={`/blog/${post.slug}`}
+          class="group flex items-center justify-between py-6 border-b border-primary/5 hover:px-2 transition-all cursor-pointer no-underline"
+        >
+          <span class="text-lg font-medium text-primary group-hover:text-primary/80">
+            {post.data.title}
+          </span>
+          <span class="text-sm text-primary opacity-50 font-medium">
+            {post.data.date}
+          </span>
+        </a>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,42 @@
+---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import SectionHeader from "./SectionHeader.astro";
+const projects = await getCollection("projects");
+const featuredProjects = projects.slice(0, 2); // Taking first two as featured
+---
+
+<section class="flex flex-col">
+  <SectionHeader h2="Featured Projects" a="/projects" />
+  <div class="flex flex-col gap-8">
+    {
+      featuredProjects.map((project) => (
+        <a
+          href={`/projects`}
+          class="group border border-primary/10 rounded-xl p-6 hover:bg-primary/5 transition-colors cursor-pointer no-underline block"
+        >
+          <div class="flex flex-col gap-4">
+            <div class="flex justify-between items-start">
+              <h3 class="text-xl font-bold text-primary">
+                {project.data.title}
+              </h3>
+              <span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                <Icon name="mdi:open-in-new" />
+              </span>
+            </div>
+            <p class="text-primary/70 leading-relaxed">
+              {project.data.description}
+            </p>
+            <div class="flex flex-wrap gap-2">
+              {project.data.tags.map((tag) => (
+                <span class="bg-primary/10 text-primary px-2 py-1 rounded text-xs font-medium">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>

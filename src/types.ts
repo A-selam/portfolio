@@ -4,8 +4,9 @@ export interface Project {
   description: string;
   tags: string[];
   image?: string;
-  liveUrl?: string;
-  codeUrl?: string;
+  liveUrl: string;
+  codeUrl: string;
+  readMoreUrl: string;
 }
 
 export interface BlogPost {
@@ -17,29 +18,38 @@ export interface BlogPost {
   readTime?: string;
 }
 
-export interface Experience {
+export interface TimelineItem {
+  organization: string;
+  logo: string;
+}
+
+export interface Experience extends TimelineItem {
+  type: "experience";
   role: string;
-  company: string;
   period: string;
-  icon: string;
 }
 
-export interface Education {
+export interface Education extends TimelineItem {
+  type: "education";
   degree: string;
-  school: string;
   period: string;
-  icon: string;
 }
 
-export interface Certification {
-  name: string;
-  issuer: string;
-  year: string;
-  icon: string;
+export interface Certification extends TimelineItem {
+  type: "certification";
+  title: string;
+  date: string;
+  url: string;
 }
 
 export interface Skill {
   name: string;
   icon?: string;
   isTextIcon?: boolean;
+}
+
+export interface CONTACT {
+  name: string;
+  icon: string;
+  url: string;
 }

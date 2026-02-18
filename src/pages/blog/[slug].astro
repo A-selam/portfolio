@@ -1,11 +1,14 @@
 ---
-import MainLayout from '../../layouts/MainLayout.astro';
-import { getCollection, render } from 'astro:content';
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getCollection, render } from "astro:content";
+import { Icon } from "astro-icon/components";
+import { CollectionEntry } from "astro:content";
 
 export async function getStaticPaths() {
-  const blogEntries = await getCollection('blog');
-  return blogEntries.map(entry => ({
-    params: { slug: entry.slug }, props: { entry },
+  const blogEntries = await getCollection("blog");
+  return blogEntries.map((entry: CollectionEntry<"blog">) => ({
+    params: { slug: entry.slug },
+    props: { entry },
   }));
 }
 
@@ -14,41 +17,69 @@ const { Content } = await render(entry);
 ---
 
 <MainLayout title={entry.data.title} currentView="blog-post">
-    <article class="max-w-3xl mx-auto px-6 py-20 w-full">
-        <header class="mb-12">
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6 font-silkscreen text-[#fffaf4]">
-                {entry.data.title}
-            </h1>
-            <div class="flex flex-wrap items-center gap-4 mb-8">
-                <p class="text-muted-blue text-sm font-medium">
-                    {entry.data.date} • {entry.data.category} • {entry.data.readTime}
-                </p>
-                <div class="flex gap-2">
-                    <span class="px-3 py-1 bg-[#334155] rounded-full text-xs font-semibold text-primary">Typescript</span>
-                    <span class="px-3 py-1 bg-[#334155] rounded-full text-xs font-semibold text-primary">Architecture</span>
-                </div>
-            </div>
-            <div class="w-full h-[400px] rounded-2xl bg-gradient-to-br from-[#1e293b] to-[#0f172a] border border-[#334155] flex items-center justify-center mb-12 relative overflow-hidden">
-                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#fffaf4 1px, transparent 1px); background-size: 20px 20px;"></div>
-                <span class="material-symbols-outlined text-8xl text-primary/10 select-none">schema</span>
-                <div class="absolute bottom-6 left-6 flex items-center gap-2 text-xs text-muted-blue uppercase tracking-widest">
-                    <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
-                    Conceptual Visualization 01
-                </div>
-            </div>
-        </header>
-        
-        <div class="prose prose-invert max-w-none prose-p:text-[#cbd5e1] prose-headings:text-[#fffaf4] prose-strong:text-[#fffaf4] prose-code:text-[#fffaf4]">
-            <Content />
+  <article class="max-w-3xl mx-auto px-6 py-20 w-full">
+    <header class="mb-12">
+      <h1
+        class="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6 font-silkscreen text-[#fffaf4]"
+      >
+        {entry.data.title}
+      </h1>
+      <div class="flex flex-wrap items-center gap-4 mb-8">
+        <p class="text-muted-blue text-sm font-medium">
+          {entry.data.date} • {entry.data.category} • {entry.data.readTime}
+        </p>
+        <div class="flex gap-2">
+          <span
+            class="px-3 py-1 bg-[#334155] rounded-full text-xs font-semibold text-primary"
+            >Typescript</span
+          >
+          <span
+            class="px-3 py-1 bg-[#334155] rounded-full text-xs font-semibold text-primary"
+            >Architecture</span
+          >
         </div>
+      </div>
+      <!-- <div
+        class="w-full h-[400px] rounded-2xl bg-gradient-to-br from-[#1e293b] to-[#0f172a] border border-[#334155] flex items-center justify-center mb-12 relative overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 opacity-20"
+          style="background-image: radial-gradient(#fffaf4 1px, transparent 1px); background-size: 20px 20px;"
+        >
+        </div>
+        <span
+          class="material-symbols-outlined text-8xl text-primary/10 select-none"
+          >schema</span
+        >
+        <div
+          class="absolute bottom-6 left-6 flex items-center gap-2 text-xs text-muted-blue uppercase tracking-widest"
+        >
+          <span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+          Conceptual Visualization 01
+        </div>
+      </div> -->
+    </header>
 
-        <footer class="mt-12 pt-8 border-t border-[#334155] flex items-center justify-end gap-6">
-             <div class="flex gap-6">
-                <a href="/blog" class="text-sm font-medium text-primary hover:opacity-70 transition-opacity no-underline flex items-center gap-2">
-                    <span class="material-symbols-outlined text-sm">arrow_back</span>
-                    Back to Blog
-                </a>
-            </div>
-        </footer>
-    </article>
+    <div
+      class="prose prose-invert max-w-none prose-p:text-[#cbd5e1] prose-headings:text-[#fffaf4] prose-strong:text-[#fffaf4] prose-code:text-[#fffaf4]"
+    >
+      <Content />
+    </div>
+
+    <footer
+      class="mt-12 pt-8 border-t border-[#334155] flex items-center justify-end gap-6"
+    >
+      <div class="flex gap-6">
+        <a
+          href="/blog"
+          class="text-sm font-medium text-primary hover:opacity-70 transition-opacity no-underline flex items-center gap-2"
+        >
+          <span class="material-symbols-outlined text-sm">
+            <Icon name="mdi:arrow-back" />
+          </span>
+          Back to Blog
+        </a>
+      </div>
+    </footer>
+  </article>
 </MainLayout>

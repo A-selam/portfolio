@@ -1,0 +1,43 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import SectionHeader from "./SectionHeader.astro";
+import { CERTIFICATIONS } from "../constants";
+---
+
+<section class="mb-24">
+  <SectionHeader h2="Certifications" />
+  <div class="grid grid-cols-1 gap-4">
+    {
+      CERTIFICATIONS.map((cert) => (
+        <a
+          href={cert.url}
+          class="group flex items-center gap-4 bg-primary/5 hover:bg-primary/10 transition-colors p-4 rounded-xl cursor-pointer no-underline"
+        >
+          <div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 shrink-0 size-14 overflow-hidden">
+            <Image
+              src={cert.logo}
+              alt={`${cert.organization} logo`}
+              width={100}
+              height={100}
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div class="flex flex-col justify-center grow">
+            <p class="text-primary text-base font-medium leading-normal">
+              {cert.title}
+            </p>
+            <p class="text-primary/60 text-xs font-normal leading-normal uppercase tracking-wider">
+              {cert.organization} • {cert.date}
+            </p>
+          </div>
+          <Icon
+            name="mdi:open-in-new"
+            size={20}
+            class="text-primary/30 group-hover:text-primary/60 transition-colors opacity-0 group-hover:opacity-100"
+          />
+        </a>
+      ))
+    }
+  </div>
+</section>
