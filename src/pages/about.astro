@@ -28,13 +28,16 @@ import ListCertificates from "../components/ListCertificates.astro";
       <p
         class="text-primary/70 text-base font-normal leading-relaxed pb-3 pt-4 max-w-2xl"
       >
-        My interests sit between backend architecture and frontend structure —
-        APIs, databases, authentication, and UI layouts that stay out of the
-        way. I like software that feels calm to use, where most of the work
+        My interests sit between backend architecture and frontend structure. I like software that feels calm to use, where most of the work
         happens quietly in the background.
       </p>
     </section>
 
+    <AboutSections sectionHeader="Experience" iterable={EXPERIENCE} />
+    <AboutSections sectionHeader="Education" iterable={EDUCATION} />
+    
+    {CERTIFICATIONS.length > 0 && <ListCertificates />}
+    
     <section
       class="py-16 mb-16 border-y border-accent-line/10 flex justify-center"
     >
@@ -54,10 +57,5 @@ import ListCertificates from "../components/ListCertificates.astro";
         }
       </div>
     </section>
-
-    <AboutSections sectionHeader="Experience" iterable={EXPERIENCE} />
-    <AboutSections sectionHeader="Education" iterable={EDUCATION} />
-
-    {CERTIFICATIONS.length > 0 && <ListCertificates />}
   </div>
 </MainLayout>
