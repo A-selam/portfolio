@@ -21,12 +21,12 @@ const displayProjects = await getCollection("projects");
 
     <div>
       <SectionHeader h2="All Projects" a="" />
-      <div class="flex flex-col space-y-20">
+      <div class="flex flex-col space-y-16 md:space-y-20">
         {
           displayProjects.map((project) => (
             <div class="group border-b border-primary/10 pb-12">
-              <div class="flex gap-8 items-start mb-6">
-                <div class="overflow-hidden rounded-xl bg-[#192b43] shrink-0 size-14 border border-primary/20 flex items-center justify-center">
+              <div class="flex gap-4 md:gap-8 items-start mb-6">
+                <div class="overflow-hidden rounded-xl bg-[#192b43] shrink-0 size-12 md:size-14 border border-primary/20 flex items-center justify-center">
                   {project.data.image && (
                     <img
                       src={project.data.image}
@@ -37,7 +37,7 @@ const displayProjects = await getCollection("projects");
                 </div>
                 <div class="flex flex-col flex-1">
                   <div class="flex flex-col gap-1">
-                    <h3 class="text-primary text-3xl font-bold leading-none font-mono mb-2">
+                    <h3 class="text-primary text-2xl md:text-3xl font-bold leading-none font-mono mb-2">
                       {project.data.title}
                     </h3>
                     <div class="flex flex-wrap gap-2 mb-4">
@@ -50,11 +50,11 @@ const displayProjects = await getCollection("projects");
                   </div>
                 </div>
               </div>
-              <p class="text-primary/70 text-base font-normal leading-relaxed max-w-2xl mb-8">
+              <p class="text-primary/70 text-sm md:text-base font-normal leading-relaxed max-w-2xl mb-8">
                 {project.data.description}
               </p>
-              <div class="flex items-center justify-between w-full">
-                <div class="flex gap-10">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-6 sm:gap-0">
+                <div class="flex flex-wrap gap-6 md:gap-10">
                   <a
                     href={project.data.liveUrl}
                     class="flex items-center gap-2 text-primary hover:opacity-70 transition-opacity group/link no-underline"
@@ -80,7 +80,7 @@ const displayProjects = await getCollection("projects");
                 </div>
                 <a
                   href={project.data.readMoreUrl}
-                  class="flex items-center gap-2 text-primary hover:opacity-70 transition-opacity group/link ml-auto no-underline"
+                  class="flex items-center gap-2 text-primary hover:opacity-70 transition-opacity group/link sm:ml-auto no-underline"
                 >
                   <span class="text-[11px] font-bold uppercase tracking-[0.15em]">
                     Read More
