@@ -1,0 +1,321 @@
+---
+id: blog_01-04-02-2026
+title: "Clean Architecture for Go Projects"
+description: "Clean architecture is not just for big teams. Here is a practical folder structure and dependency rules to keep your Go projects maintainable and scalable, even if you are the only developer."
+date: April 02, 2026
+category: Clean Arch
+readTime: --
+---
+
+# Clean Architecture for Go Projects
+
+I used to lose momentum at the same point in almost every new Go project: the first hour.
+
+Not because the feature was hard.
+Because I kept rebuilding the same folder structure, renaming layers, moving files around, and arguing with myself about where logic should live.
+
+If you build solo projects, this pattern is familiar:
+
+- Day 1: "I will keep it simple."
+- Day 7: handlers contain business rules.
+- Day 20: database details leak into core logic.
+- Day 40: adding one feature touches five unrelated files.
+
+That friction is what pushed me toward a clean architecture setup I could repeat without thinking. Eventually, I wrapped it into a small CLI called `goinit` so every project starts from the same boundaries.
+
+This post is not a theory dump. It is the practical version: how architecture becomes folders, how dependency direction protects your codebase, and how to ship fast without turning the code into spaghetti.
+
+## The Real Problem Is Not Folders, It Is Coupling
+
+People often debate structure like this is mostly aesthetics:
+
+- "Should it be `handlers` or `controllers`?"
+- "Do we need `internal` here?"
+- "Is this over-engineered?"
+
+Those naming choices matter less than one core thing: **what depends on what**.
+
+When business logic depends on framework code or concrete infrastructure, you pay for it later in three ways:
+
+1. Changes become risky because logic is scattered.
+2. Tests get harder because core behavior needs external systems.
+3. Refactors stall because touching one layer breaks another.
+
+Clean architecture is basically the opposite move: keep your most valuable logic in the most stable part of the system.
+
+## Clean Architecture in Plain English
+
+You do not need a giant diagram to use this. Three rules cover most of it:
+
+1. Business rules should not depend on frameworks.
+2. Dependencies should point inward toward core logic.
+3. Interfaces should isolate change-heavy details like databases, HTTP clients, queues, and third-party SDKs.
+
+That is it.
+
+If you hold those rules while creating folders and packages, the architecture emerges naturally.
+
+## The Folder Structure I Use and Why
+
+Here is the structure `goinit` generates:
+
+```text
+my-go-app/
+  cmd/api/
+  config/
+  delivery/controller/
+  delivery/route/
+  domain/
+  infrastructure/middleware/
+  repository/
+  usecase/
+  utils/
+  tests/
+  .github/workflows/
+```
+
+Now let us map each folder to intent.
+
+### `domain/` is the stable core
+
+Put things here that represent business meaning, not technical plumbing:
+
+- Entities and value objects
+- Domain-level contracts (for example repository interfaces)
+- Rules that should survive framework or database swaps
+
+This should be your least dependent layer. If `domain` imports a web framework or SQL driver, your boundaries are already drifting.
+
+### `usecase/` holds application workflows
+
+Use cases coordinate domain behavior for specific outcomes.
+
+Examples:
+
+- Register a user
+- Place an order
+- Cancel a subscription
+
+A use case should talk in business language and depend on abstractions from `domain`, not concrete infrastructure.
+
+### `delivery/` handles transport concerns
+
+This is your adapter for HTTP (or gRPC, messaging, CLI, etc.). In this scaffold:
+
+- `delivery/controller/`: request parsing, response mapping
+- `delivery/route/`: route wiring
+
+Controllers should not contain heavy business rules. They translate input/output and delegate to use cases.
+
+### `repository/` implements domain contracts
+
+If `domain` defines a repository interface, `repository` provides concrete implementations.
+
+That lets your use cases depend on behavior, not storage technology.
+
+Swap Postgres for MySQL? Mostly a repository concern.
+
+### `infrastructure/` integrates external systems
+
+This is where operational details live:
+
+- Database setup
+- Middleware
+- Logging adapters
+- Third-party service integrations
+
+Infrastructure should be easy to change and easy to isolate from core logic.
+
+### `cmd/api/` is the composition root
+
+This is where everything gets wired:
+
+- Build concrete implementations
+- Inject dependencies into use cases
+- Attach handlers/routes
+- Boot the app
+
+Think of this as assembly, not business logic.
+
+### Support layers: `config/`, `tests/`, `utils/`
+
+These help operations and development speed, but they should not become dumping grounds. Keep clear ownership and avoid "misc" gravity.
+
+## Dependency Direction in Practice
+
+Let us make the inward dependency rule concrete.
+
+A request flow should look like this:
+
+1. Controller receives the HTTP request.
+2. Controller calls a use case.
+3. Use case applies business logic and depends on domain contracts.
+4. Repository implementation satisfies those contracts using concrete infrastructure.
+
+In words: **outer layers call inward logic; inner layers do not know outer details**.
+
+The key win is this: your core behavior keeps working even if HTTP framework, database, or deployment platform changes.
+
+## End-to-End Example: "Create User" Without Boundary Leaks
+
+Imagine we add a `CreateUser` feature.
+
+### 1) Delivery layer receives request
+
+`delivery/controller/user_controller.go`:
+
+- Validate request shape
+- Convert DTO to use case input
+- Call `CreateUser`
+- Map result to HTTP response
+
+No SQL. No infrastructure details. Minimal branching.
+
+### 2) Use case executes policy
+
+`usecase/user_usecase.go`:
+
+- Enforce business rules (for example unique email requirement)
+- Call domain repository contract
+- Return domain result or business error
+
+This is where the real application behavior lives.
+
+### 3) Domain defines contract
+
+`domain/repository.go`:
+
+- `UserRepository` interface
+- Domain-level method signatures
+
+This keeps use case logic decoupled from storage engines.
+
+### 4) Repository provides implementation
+
+`repository/user_repository.go`:
+
+- Implement `UserRepository`
+- Handle persistence details
+- Return domain-friendly results
+
+### 5) Infrastructure handles setup
+
+`infrastructure/database.go`:
+
+- Build DB connection, pooling, etc.
+- Provide dependencies to repository constructors
+
+### 6) Composition root wires everything
+
+`cmd/api/main.go`:
+
+- Construct DB client
+- Construct repository
+- Construct use case
+- Construct controller
+- Register routes and run server
+
+That full flow gives you isolation and speed. You can test use cases with mocks, test handlers with fake use cases, and swap adapters without rewriting core behavior.
+
+## Before vs After: Why This Feels Better in Real Projects
+
+Before (chaotic structure), a new feature often means:
+
+- Editing handlers, DB code, and domain logic in one file
+- Hidden coupling to framework types
+- Hard-to-test behavior tied to live systems
+
+After (structured clean architecture):
+
+- Clear place for each decision
+- Predictable dependency direction
+- Faster onboarding, easier reviews, and safer refactors
+
+This is especially useful for indie projects where you are both developer and maintainer. Future-you is part of the team.
+
+## Why I Built `goinit`
+
+> Github link: https://github.com/A-selam/goinit
+
+I did not build `goinit` because scaffolding is exciting. I built it because repetition and tiny setup mistakes were draining focus.
+
+The tool gives me a consistent base with:
+
+- Clean architecture-aligned folders
+- Starter files like `go.mod`, `README.md`
+- A `-dry-run` mode to preview generated output
+- A `-force` option for existing non-empty folders when needed
+
+Quick usage looks like this:
+
+```bash
+go run . -name my-go-app
+```
+
+Or preview first:
+
+```bash
+go run . -name my-go-app -dry-run
+```
+
+## Tradeoffs
+
+Clean architecture has costs. Pretending otherwise helps nobody.
+
+- More folders can feel heavy for tiny throwaway experiments.
+- Over-abstraction too early can slow early iteration.
+- Teams still need discipline; folder names alone do not enforce boundaries.
+
+My rule of thumb:
+
+- Keep the architecture principles from day one.
+- Keep implementations lightweight until complexity demands more.
+
+In other words, do not build enterprise ceremony for a weekend prototype, but do protect dependency direction from the start.
+
+## How to Adapt This Template by Project Size
+
+### If your project is tiny
+
+Keep the same conceptual layers, but reduce adapter sprawl.
+
+You can start with one controller, one use case, one repository implementation. The point is not many files; the point is clear boundaries.
+
+### If your project is growing
+
+Split by bounded context while preserving inward dependencies.
+
+For example, instead of a flat `usecase/`, move toward context-oriented packages (`user`, `billing`, `catalog`) and keep contracts close to domain language.
+
+### If your project has multiple transports
+
+Keep business logic in use cases and add adapters around it:
+
+- HTTP in `delivery/controller`
+- gRPC adapter in another delivery package
+- queue consumer as another outer adapter
+
+All should converge on the same use case interfaces.
+
+## A Practical Checklist You Can Apply Today
+
+Use this when creating or reviewing a Go service:
+
+1. Can domain code compile without framework/database imports?
+2. Do use cases depend on domain contracts instead of concrete implementations?
+3. Are controllers thin translators rather than business-rule containers?
+4. Are repository implementations kept outside use case and domain packages?
+5. Is wiring isolated in `cmd/api` instead of scattered across layers?
+6. Can core behavior be unit-tested without external systems?
+
+If you answer "no" to any item, you found your next refactor target.
+
+## Closing
+
+Structure is architecture made visible.
+
+You do not need a massive framework or a formal process to benefit from clean architecture. You need a consistent dependency direction, clear layer intent, and a repeatable starting point.
+
+That is exactly why I use `goinit`: start with boundaries, move fast with confidence, and keep core logic independent as the project evolves.
+
+If you try this scaffold, tweak it to your context. Keep what helps you ship. Remove what adds drag. But protect the inward dependency rule at all costs, because that one decision compounds over the lifetime of your codebase.
